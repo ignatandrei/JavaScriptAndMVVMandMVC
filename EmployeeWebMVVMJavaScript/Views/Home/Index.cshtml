@@ -1,0 +1,320 @@
+﻿@using JqueryMVCRazor_Repository;
+@using System.Web.Script.Serialization;
+@model ListEmployeesViewModel
+
+@{
+    ViewBag.Title = "";
+
+    var jss = new JavaScriptSerializer();
+    var arrDepartments = jss.Serialize(Model.DepartmentList);
+    var arrEmployees = jss.Serialize(Model.AllEmployees);
+    //you can load those with web api or any other method
+}
+
+<div class="jumbotron">
+    <h1>Demo for MVC MVVM Javascript Batch editing</h1>
+    <p class="lead">Simple demo using Knockout - you can use Angular, Kendo or any other Javascript MVVM framework</p>
+
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>Getting started</h2>
+        <p>
+            Press <button value="Edit" onclick="javascript:BeginEdit()">Edit</button> Then change some data(or 
+            <button value="Add" onclick="javascript:BeginAdd()">Add</button>
+            
+            ) and send <button value="Save" onclick="javascript:BeginSave()">Save</button> 
+
+        </p>
+    </div>
+
+</div>
+
+<table width='100%'>
+    <thead>
+        <tr>
+            <th width='25%'>NR</th>
+            <th width='25%'>Name</th>
+            <th width='25%'>Department</th>
+            <th>Active</th>
+            <th>&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody data-bind='foreach:  employees'>
+        <tr>
+            <td>
+                <span data-bind='text: nr' > </span>
+            </td>
+            <td>
+                <span data-bind='text: NameEmployee,visible:displayMode'> </span>
+                <input data-bind='value: NameEmployee,visible:editMode' />
+            </td>
+            <td>
+                <span data-bind='text: deptName(),visible:displayMode'> </span>                
+                <select data-bind='options: arrDeps,visible:editMode, optionsValue:"IdDepartment",optionsText: "NameDepartment", optionsCaption: "Select...", value: iddepartament'> </select>
+            </td>
+            <td>
+                <span data-bind='text: Active,visible:displayMode'> </span>
+                <input type="checkbox" data-bind='checked: Active,visible:editMode' />
+            </td>
+            <td><button data-bind="click: $root.removeEmp,visible:editMode">Delete</button></td>
+                
+        </tr>
+    </tbody>
+    
+</table>
+@section scripts{
+    @*todo: use binding*@
+    <script src='@Url.Content("~/Scripts/knockout-3.0.0.js")' ></script>
+
+    <script>
+        //existing departments
+        var arrDeps = @Html.Raw(arrDepartments)     ;
+        //existing employees
+        var arrEmps = @Html.Raw(arrEmployees)       ;
+
+        var i=1;
+        var emp = function(empId,name,deptId,active){
+            var self = this;
+            self.nr = i++; 
+            self.IdEmployee = ko.observable(empId);
+            self.NameEmployee = ko.observable(name);
+            self.Active = ko.observable(active);
+            self.iddepartament = ko.observable(deptId);
+            self.editMode = ko.observable(false);
+
+            self.displayMode= ko.observable(true);
+            self.deptName= function(){
+                var id=self.iddepartament();
+                var name ="";
+                $.each(arrDeps,function(index,value){
+                    if(value.IdDepartment == id){
+                        name=value.NameDepartment;
+                        return false;
+                    }
+                });
+                return name;
+
+            }
+
+        }
+
+        var jsModel = function() {
+            var self = this;
+            self.deletedItemsId= ';';
+            self.employees = ko.observableArray([]);
+            self.addEmp = function(empId,name,deptId,active) { self.employees.push(new emp(empId,name,deptId,active)) };
+            self.removeEmp = function(emp) { 
+                var id=emp.IdEmployee(); 
+                if(id != 0)
+                    self.deletedItemsId += id;
+                
+                self.employees.remove(emp); 
+            };
+            self.save = function() { 
+                
+                var itemsArray = self.employees();
+                var strData = saveArray(itemsArray,"AllEmployees",exclude, ko.observable,validateProperty);
+                if(strData == "")
+                {
+                    //window.alert("no save");
+                    return;
+                }
+                strData="deletedItems=" +self.deletedItemsId + strData;
+                window.alert("saving:" + strData);
+                $.ajax({
+                    type:"POST",
+                    url:'@Url.Content("~/Home/SaveEmployees")'  ,
+                    data: strData ,
+                    datatype:"JSON",
+                    success: function (returndata) {
+                        if (returndata.ok) {
+                            var dels=[];
+                            //delete the new items and add the new ones
+                            var idExisting=';';
+                            $.each(self.employees(), function(index,emp) {
+                               
+                                if(emp.IdEmployee() == 0 )
+                                    dels.push(emp);
+                                else
+                                    idExisting += emp.IdEmployee()+";";
+
+                            });
+                            $.each(dels,function(index,emp) {
+                                self.removeEmp(emp);
+                            });
+                            //add new one
+                            window.alert('add new ones');
+                            $.each(returndata.emps,function(index,emp) {
+                                
+                                var id=emp.IdEmployee;
+                                if(idExisting.indexOf(";" + id+";") == -1){// not found - means it is a new one
+                                    self.addEmp(emp.IdEmployee ,emp.NameEmployee, emp.iddepartament,emp.Active);
+
+                                }
+                            });
+
+
+                            
+                            self.edit(false);
+
+                        }
+                        else {
+                            //this is an error from the server
+                            window.alert(' error : ' + returndata.message);
+                        }
+ 
+                    }
+                });
+                
+                
+            };
+            self.edit = function(val){
+                var arr =self.employees();
+                $.each(arr ,function(index,value){
+                    value.editMode(val);
+                    value.displayMode(!val);
+                });
+                if(!val){
+                    self.deletedItemsId= ';';
+                }
+                
+            }
+        }
+        
+        var model= new jsModel();
+        $.each(arrEmps,function(index,value){
+            model.addEmp(value.IdEmployee ,value.NameEmployee, value.iddepartament,value.Active);
+        });
+
+        ko.applyBindings(model);
+
+        function BeginEdit(){
+
+            model.edit(true);
+            window.alert("you can edit now");
+        }
+        function BeginSave(){
+            model.save();
+        }
+        function BeginAdd(){
+            
+            model.addEmp(0,'',0,true);
+            model.edit(true);
+        }
+
+
+        function exclude(prop){
+            switch(prop){
+                case "nr":
+                    return true;
+                case "deptName":
+                    return true;
+                case "editMode":
+                    return true;
+                case "displayMode":
+                    return true;
+                default:
+                    return false;
+            }
+
+        }
+        function validateProperty(propName, value, item, number){
+            switch(propName){
+                case "NameEmployee":
+                    if(value == ""){
+                        window.alert("please enter employee name for row number " + (number+1) );
+                        return false;
+                    }
+                    return true;
+                case "iddepartament":
+                    
+                    if(value === undefined  ||  value == 0){
+                        window.alert("please select a department for row number " + (number+1) );
+                        return false;
+                    }
+                    return true;
+                default:
+                    return true;
+            }
+        }
+
+
+
+        //this is generic and can be put in a different .js file
+        function saveArray(itemsArray,/*you can not pass those*/prefix, excludeProp,recognizeFunction,validateProp){
+            var l = itemsArray.length ;
+            if(l == 0){
+               
+                return "";
+            }
+
+            var propNames = refProps(itemsArray[0],excludeProp,recognizeFunction); // you can pass null on exclude to add all properties
+            var nr = 0 ;
+            var strData="";
+            for (var i = 0; i < l; i++) {
+                var  objToSave= itemsArray[i]; 
+                //you can pass here another function to recognize which object can be saved
+                //if(!canBeSaved(objSave) continue;
+                for (var j = 0; j < propNames.length; j++) {
+                    var nameProp = propNames[j];
+                    var val =objToSave[nameProp] ;
+                    var t = (typeof val).toLowerCase();
+                    if(t == 'function'){
+                        val = objToSave[nameProp]();
+                    }
+
+                    if (validateProp) {
+                        if (!validateProp(nameProp,val, objToSave, i)) {
+                            return "";
+                        }
+                    }
+                    strData += "&"+ prefix+"[" + nr + "]." + nameProp;
+                   
+                    strData += "=" + val;
+                }
+                nr++;
+
+            }
+            return strData;
+        }
+        //this is generic and can be put in a different .js file
+        var refProps= function (obj, exclude , recognizeFunction) {
+            var properties = [];
+            for (var prop in obj) {
+               
+
+                //you can define an exclude function to exclude added properties
+                if(exclude){
+                    if(exclude(prop))
+                        continue;
+                }
+
+                var excludeProp = true;
+                var t = (typeof obj[prop]).toLowerCase();
+                if (t == 'number' || t == 'string' || t == 'boolean') {
+                    
+                    excludeProp=false;
+                    
+                }
+
+                if(excludeProp){
+                    //special case :maybe it is a observable function 
+                    if(recognizeFunction){
+                        if(t == 'function' ){
+                            if(recognizeFunction(t))
+                                excludeProp=false;
+                        }
+                    };
+                }
+
+                
+                if(!excludeProp)
+                    properties.push(prop);
+            };
+            return properties;
+        }
+
+    </script>
+}

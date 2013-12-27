@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - MVVM Javascript MVC Binding</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("Application name", "Index", "Home", null, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                </ul>
+                @*@Html.Partial("_LoginPartial")*@
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - MVC MVVM </p>
+
+            <p>
+                Made by Andrei Ignat, <a href="http://msprogrammer.serviciipeweb.ro/" target="_blank">http://msprogrammer.serviciipeweb.ro</a>
+            </p><p>
+                Source code at <a href="https://github.com/ignatandrei/MVVMJavaScriptMVC" target="_blank">https://github.com/ignatandrei/MVVMJavaScriptMVC</a>
+            </p><p>
+                View online at <a href="http://MVVMJavaScriptMVC.apphb.com" target="_blank">http://MVVMJavaScriptMVC.apphb.com</a>
+            </p><p>
+                NuGet package at <a href="https://www.nuget.org/packages/MVVMJavaScriptMVC" target="_blank"> https://www.nuget.org/packages/MVVMJavaScriptMVC</a>
+            </p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.ajaxSetup({
+                cache: false,
+                error: function (x, e) {
+                    if (x.status == 0) {
+                        alert('You are offline!!\n Please Check Your Network.');
+                    } else if (x.status == 404) {
+                        alert('Requested URL not found.');
+                    } else if (x.status == 500) {
+                        alert('Internal Server Error.');
+                    } else if (e == 'parsererror') {
+                        alert('Error.\nParsing JSON Request failed.');
+                    } else if (e == 'timeout') {
+                        alert('Request Time out.');
+                    } else {
+                        alert('Unknown Error.\n' + x.responseText);
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

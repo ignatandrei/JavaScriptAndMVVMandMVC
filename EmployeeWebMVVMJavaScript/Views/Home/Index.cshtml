@@ -65,7 +65,7 @@
     
 </table>
 @section scripts{
-    @*todo: use binding*@
+    @*todo: use bundling*@
     <script src='@Url.Content("~/Scripts/knockout-3.0.0.js")' ></script>
 
     <script>
@@ -102,8 +102,8 @@
 
         var jsModel = function() {
             var self = this;
-            self.deletedItemsId= ';';
             self.employees = ko.observableArray([]);
+            self.deletedItemsId= ';';
             self.addEmp = function(empId,name,deptId,active) { self.employees.push(new emp(empId,name,deptId,active)) };
             self.removeEmp = function(emp) { 
                 var id=emp.IdEmployee(); 

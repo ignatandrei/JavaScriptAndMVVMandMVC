@@ -7,7 +7,6 @@ namespace JqueryMVCRazor_Repository
     public class ListEmployeesViewModel
     {
        
-        //public employeeList EmployeeList;
         public employeeList AllEmployees { get; set; }
         public departmentList DepartmentList{ get; private set; }
         public void Load()

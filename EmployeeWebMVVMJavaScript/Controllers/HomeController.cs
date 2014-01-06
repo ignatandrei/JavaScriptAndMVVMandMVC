@@ -17,6 +17,7 @@ namespace EmployeeWebMVVMJavaScript.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult SaveEmployees(ListEmployeesViewModel e,string deletedItems)
         {
             try

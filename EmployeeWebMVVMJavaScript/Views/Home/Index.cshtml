@@ -10,7 +10,7 @@
     var arrEmployees = jss.Serialize(Model.AllEmployees);
     //you can load those with web api or any other method
 }
-
+@Html.AntiForgeryToken()
 <div class="jumbotron">
     <h1>Demo for MVC MVVM Javascript Batch editing</h1>
     <p class="lead">Simple demo using Knockout - you can use Angular, Kendo or any other Javascript MVVM framework</p>
@@ -121,7 +121,13 @@
                     //window.alert("no save");
                     return;
                 }
+
                 strData="deletedItems=" +self.deletedItemsId + strData;
+                //added antiforgery token
+                var aft= $('input[name="__RequestVerificationToken"]');
+                if(aft.length){
+                    strData +="&__RequestVerificationToken=" + aft.val();
+                }
                 window.alert("saving:" + strData);
                 $.ajax({
                     type:"POST",

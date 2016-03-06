@@ -37,6 +37,7 @@ namespace JqueryMVCRazor_DAL
             departmentList dl = new departmentList();
             dl.Load();
             this.Add(new employee(10, "Andrei Ignat", dl[0].IdDepartment));
+            this.Add(new employee(15, "Andrei Rinea", dl[0].IdDepartment));
             this.Add(new employee(25, "Someone from HR", dl[1].IdDepartment));
         }
 

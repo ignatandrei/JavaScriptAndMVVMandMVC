@@ -7,6 +7,16 @@ using System.Web.Mvc;
 
 namespace EmployeeWebMVVMJavaScript.Controllers
 {
+    public class Select2DataChildren
+    {
+        public long id { get; set; }
+        public string text { get; set; }
+    }
+    public class Select2Data
+    {
+        public string text { get; set; }
+        public Select2DataChildren[] children { get; set; }
+    }
     public class HomeController : Controller
     {
         public ActionResult Index()
@@ -14,6 +24,46 @@ namespace EmployeeWebMVVMJavaScript.Controllers
             var model = new ListEmployeesViewModel();
             model.Load();
             return View(model);
+        }
+
+        public ActionResult Select2()
+        {
+            var l = new ListEmployeesViewModel();
+            l.Load();
+            var ret = new List<Select2Data>();
+            foreach (var dep in l.DepartmentList)
+            {
+                var s = new Select2Data();
+                s.text = dep.NameDepartment;
+                s.children = l.AllEmployees
+                    .Where(it => it.iddepartament == dep.IdDepartment)
+                    .Select(it => new Select2DataChildren()
+                    { id = it.IdEmployee, text = it.NameEmployee }
+                    )
+                    .ToArray();
+
+                ret.Add(s);
+            }
+            return View(ret);
+        }
+        [HttpPost]
+        public JsonResult GetEmpSelect2(string q, int? page)
+        {
+            q = (q ?? "").ToLower();
+            var l = new ListEmployeesViewModel();
+            l.Load();
+            var items = l.AllEmployees
+                .Where(it => it.NameEmployee.ToLower().Contains(q))
+                .Select(it => new {id = it.IdEmployee, text = it.NameEmployee})
+                //.Skip(((page??1)-1)*1)
+                //.Take(1)
+                .ToArray();
+                return Json(new
+            {
+                items=items,
+                total_count = 2,
+                page=1
+            });
         }
 
         [HttpPost]

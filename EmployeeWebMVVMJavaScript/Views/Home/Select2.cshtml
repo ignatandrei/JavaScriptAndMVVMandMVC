@@ -1,0 +1,104 @@
+﻿@model List<EmployeeWebMVVMJavaScript.Controllers.Select2Data>
+
+@{
+    
+}
+<link rel="stylesheet" href="~/Content/select2.min.css"/>
+<div>
+    <a href="https://select2.github.io/">https://select2.github.io/</a>
+    <a href="https://select2.github.io/examples.html">https://select2.github.io/examples.html</a>
+    <p>
+        <select id="Department" multiple="multiple" size="10" style="width: 25%">
+            @foreach (var select2Data in Model)
+            {
+                <optgroup label="@select2Data.text"></optgroup>
+                foreach (var item in select2Data.children)
+                {
+                    <option value="@item.id">@item.text</option>
+                }
+            }
+
+        </select>
+    </p>
+    <p>
+        <select id="emp" multiple="multiple" style="width: 25%"></select>
+    </p>
+
+</div>
+@section scripts
+{
+    <script src="~/Scripts/select2.full.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#Department').select2({
+                placeholder: "preload data ",
+                tags: true,            
+                templateResult: formatDataForSelect2
+            
+            });
+            $('#emp').select2({
+                 
+                placeholder: "load data ajax",
+                minimumInputLength: 2,
+                tags: true,
+                templateResult: formatDataForSelect2,
+                ajax: {
+                    url: '@Url.Action("GetEmpSelect2", "Home")',
+                    dataType: 'json',
+                    type: 'POST',
+                    quietMillis: 100,
+                    data: function (params) {
+                        return {
+                            q: params.term, // search term
+                            page: params.page||1
+                        };
+                    },
+                    processResults: function (data, params) {
+                        // parse the results into the format expected by Select2
+                        // since we are using custom formatting functions we do not need to
+                        // alter the remote JSON data, except to indicate that infinite
+                        // scrolling can be used
+                        params.page = params.page || 1;
+
+                        return {
+                            results: data.items,
+                            pagination: {
+                                more: false
+                            }
+                        };
+                    },
+                },
+            });
+        });
+
+        function formatDataForSelect2(itemSelect) {
+            if (!itemSelect.id) {
+                return "Department " + itemSelect.text;
+            }
+            var itStart = "<i>";
+            var itEnd = "</i>";
+            if (itemSelect.id % 2 == 0) {
+                itStart = '';
+                itEnd = '';
+            }
+            return $("<span>"+itStart+ itemSelect.text + itEnd + "</span>");
+        }
+        @*$.ajax({
+            type:"POST",
+            url:'@Url.Action("GetEmpSelect2", "Home")' ,
+            //data: .... ,
+            datatype:"JSON",
+            contentType:"application/json; charset=utf-8",
+            success: function (returndata) {
+                var data = $('#Department').select2('data');
+                for (var i = 0; i < returndata.length; i++) {
+                    data.push(returndata[i]);
+                }
+                $('#Department').select2("data", data, true);
+                
+            }
+        }
+        );*@
+
+    </script>
+}

@@ -89,6 +89,11 @@ namespace EmployeeWebMVVMJavaScript.Controllers
             }
         }
 
+        public Action GridDataTables()
+        {
+            return View();
+        }
+
         public ActionResult RomaniaMap()
         {
             return View();

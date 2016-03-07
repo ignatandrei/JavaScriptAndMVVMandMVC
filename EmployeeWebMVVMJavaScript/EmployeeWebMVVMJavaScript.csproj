@@ -237,6 +237,7 @@
     <Content Include="Views\Home\Select2.cshtml" />
     <Content Include="Views\Home\Graphs.cshtml" />
     <Content Include="Views\Home\RomaniaMap.cshtml" />
+    <Content Include="Views\Home\GridDataTables.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -189,8 +189,21 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\judete_ro.geojson.js" />
     <Content Include="Scripts\knockout-3.0.0.debug.js" />
     <Content Include="Scripts\knockout-3.0.0.js" />
+    <Content Include="Scripts\leafletlabel\images\death.png" />
+    <Content Include="Scripts\leafletlabel\leaflet.label-src.js" />
+    <Content Include="Scripts\leafletlabel\leaflet.label.css" />
+    <Content Include="Scripts\leafletlabel\leaflet.label.js" />
+    <Content Include="Scripts\leaflet\images\layers-2x.png" />
+    <Content Include="Scripts\leaflet\images\layers.png" />
+    <Content Include="Scripts\leaflet\images\marker-icon-2x.png" />
+    <Content Include="Scripts\leaflet\images\marker-icon.png" />
+    <Content Include="Scripts\leaflet\images\marker-shadow.png" />
+    <Content Include="Scripts\leaflet\leaflet-src.js" />
+    <Content Include="Scripts\leaflet\leaflet.css" />
+    <Content Include="Scripts\leaflet\leaflet.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
@@ -223,6 +236,7 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Home\Select2.cshtml" />
     <Content Include="Views\Home\Graphs.cshtml" />
+    <Content Include="Views\Home\RomaniaMap.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

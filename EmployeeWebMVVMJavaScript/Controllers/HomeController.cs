@@ -89,6 +89,10 @@ namespace EmployeeWebMVVMJavaScript.Controllers
             }
         }
 
+        public ActionResult RomaniaMap()
+        {
+            return View();
+        }
         public ActionResult Graphs()
         {
             var model = new ListEmployeesViewModel();

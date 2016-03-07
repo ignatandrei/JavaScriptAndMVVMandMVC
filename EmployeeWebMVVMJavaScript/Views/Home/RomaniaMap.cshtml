@@ -1,0 +1,116 @@
+﻿
+@{
+    ViewBag.Title = "RomaniaMap";
+}
+
+<h2>RomaniaMap</h2>
+<link href="/Scripts/leaflet/leaflet.css" rel="stylesheet" />
+<link href="/Scripts/leafletlabel/leaflet.label.css" rel="stylesheet" />
+<div id="map" style="height: 600px"></div>
+
+
+
+@section scripts{
+    <script src="~/Scripts/leaflet/leaflet.js"></script>
+<script src="~/Scripts/leafletlabel/leaflet.label.js"></script>
+<script src="~/Scripts/judete_ro.geojson.js"></script>
+
+<script>
+        var arrJudete = [];
+arrJudete.push({judet:'alba', val:118262});
+arrJudete.push({judet:'arad', val:160246});
+arrJudete.push({judet:'arges', val:216754});
+arrJudete.push({judet:'bacau', val:158612});
+arrJudete.push({judet:'bihor', val:202460});
+arrJudete.push({judet:'bistrita-nasaud', val:84363});
+arrJudete.push({judet:'botosani', val:73515});
+arrJudete.push({judet:'braila', val:82333});
+arrJudete.push({judet:'brasov', val:210285});
+arrJudete.push({judet:'bucuresti', val:1193775});
+arrJudete.push({judet:'buzau', val:120417});
+arrJudete.push({judet:'calarasi', val:56270});
+arrJudete.push({judet:'caras-severin', val:85875});
+arrJudete.push({judet:'cluj', val:257493});
+arrJudete.push({judet:'constanta', val:236367});
+arrJudete.push({judet:'covasna', val:72312});
+arrJudete.push({judet:'dimbovita', val:128647});
+arrJudete.push({judet:'dolj', val:192765});
+arrJudete.push({judet:'galati', val:155240});
+arrJudete.push({judet:'giurgiu', val:60003});
+arrJudete.push({judet:'gorj', val:105971});
+arrJudete.push({judet:'harghita', val:102087});
+arrJudete.push({judet:'hunedoara', val:136026});
+arrJudete.push({judet:'ialomita', val:61112});
+arrJudete.push({judet:'iasi', val:173619});
+arrJudete.push({judet:'ilfov', val:133216});
+arrJudete.push({judet:'maramures', val:142463});
+arrJudete.push({judet:'mehedinti', val:72070});
+arrJudete.push({judet:'mures', val:168896});
+arrJudete.push({judet:'neamt', val:126523});
+arrJudete.push({judet:'olt', val:101090});
+arrJudete.push({judet:'prahova', val:237271});
+arrJudete.push({judet:'salaj', val:72159});
+arrJudete.push({judet:'satu_mare', val:114174});
+arrJudete.push({judet:'sibiu', val:144222});
+arrJudete.push({judet:'suceava', val:179995});
+arrJudete.push({judet:'teleorman', val:71737});
+arrJudete.push({judet:'timis', val:258590});
+arrJudete.push({judet:'tulcea', val:57469});
+arrJudete.push({judet:'vaslui', val:71749});
+arrJudete.push({judet:'vilcea', val:111791});
+arrJudete.push({judet:'vrancea', val:92101});
+var max = Math.max.apply(Math, arrJudete.map(function(o) { return o.val; }));
+var min = Math.min.apply(Math, arrJudete.map(function(o) { return o.val; }));
+
+        function onEachFeature(feature, layer) {
+            if (feature.geometry && feature.geometry.type)
+                if (feature.geometry.type === 'Polygon') {
+
+                    // Get bounds of polygon
+                    var bounds = layer.getBounds();
+                    // Get center of bounds
+                    var center = bounds.getCenter();
+                    // Use center to put marker on map
+
+                    //var marker = L.marker(center)
+                    //    .bindLabel(feature.properties.NAME, { noHide: true })
+                    //    .bindPopup('Can has popup?')
+                    //    .addTo(map);
+                    var judet = feature.properties.NAME;
+                    var result = $.grep(arrJudete, function (e) { return e.judet == judet.toLowerCase(); });
+                    var val = '';
+                    if (result.length > 0) {
+                        val = result[0].val;
+                    }
+                    var radCircle = (40 - 10) * val + (10 * max - 40 * min);
+                    radCircle = radCircle / (max - min);
+                    var circle = L.circleMarker([center.lat, center.lng], { fillColor: "#f00", radius: radCircle })
+                        .bindLabel(feature.properties.NAME_UTF8 +':'+ val, { direction: 'left'})
+
+                        .addTo(map);
+
+                }
+        }
+
+        var map;
+        $( document ).ready(function() {
+            map = L.map('map').setView([46,25], 7);
+
+            L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
+                maxZoom: 7,
+                minZoom: 7,
+                attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+                    '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                    'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+                id: 'mapbox.light'
+            }).addTo(map);
+            //map.panTo(new L.LatLng(46, 25), { scrollWheelZoom: false, tap: false });
+
+
+            L.geoJson(judeteRO, {
+                onEachFeature: onEachFeature
+            });
+            //alert('done');
+        });
+</script>
+}

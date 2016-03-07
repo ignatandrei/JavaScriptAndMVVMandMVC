@@ -1,0 +1,57 @@
+﻿@model JqueryMVCRazor_Repository.ListEmployeesViewModel
+
+@{
+    ViewBag.Title = "Graphs";
+    string categories = string.Join(",", Model.DepartmentList.Select(it =>"'"+ it.NameDepartment + "'").ToArray());
+    string nrEmployees = string.Join(",", Model.AllEmployees.GroupBy(it => it.iddepartament).Select(g =>""+ g.Count()).ToArray());
+}
+
+<h2>Graph</h2>
+<a href="http://www.highcharts.com/demo" target="_blank">http://www.highcharts.com/demo</a>
+<div id="container"></div>
+@section scripts
+{
+
+    <script src="~/Scripts/highcharts/highcharts.js"></script>
+    <script src="~/Scripts/highcharts/exporting.js"></script>
+    <script>
+        var categoriesDep = [@Html.Raw(categories)];
+        var seriesData = [{ 
+                            name: 'NumberEmployees',
+                            data:  [@nrEmployees] 
+                         }];
+
+        $('#container').highcharts({
+            chart: {
+                type: 'spline'
+            },
+            title: {
+                text: 'Chart employees number'
+            },
+            subtitle: {
+                text: 'Example chart'
+            },
+            xAxis: {
+                categories: categoriesDep
+            },
+            yAxis: {
+                title: {
+                    text: 'Valori'
+                }
+            },
+            tooltip: {
+                crosshairs: true,
+                shared: true
+            },
+            plotOptions: {
+                line: {
+                    dataLabels: {
+                        enabled: true
+                    },
+                    enableMouseTracking: false
+                }
+            },
+            series: seriesData
+        });
+    </script>
+}

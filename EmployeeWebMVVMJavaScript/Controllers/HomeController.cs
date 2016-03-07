@@ -88,6 +88,13 @@ namespace EmployeeWebMVVMJavaScript.Controllers
                 return Json(new { ok = false, message = ex.Message });
             }
         }
+
+        public ActionResult Graphs()
+        {
+            var model = new ListEmployeesViewModel();
+            model.Load();
+            return View(model);
+        }
         public ActionResult About()
         {
             ViewBag.Message = "MVVM javascript to MVC binding";

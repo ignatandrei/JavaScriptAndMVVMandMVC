@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-
+using Kendo.DynamicLinq;
 namespace EmployeeWebMVVMJavaScript.Controllers
 {
     public class Select2DataChildren
@@ -45,6 +45,16 @@ namespace EmployeeWebMVVMJavaScript.Controllers
                 ret.Add(s);
             }
             return View(ret);
+        }
+        [HttpPost]
+        public JsonResult GetEmpSelectKEndo(int take, int skip)
+        {
+            var l = new ListEmployeesViewModel();
+            l.Load();
+            return Json(
+                l.AllEmployees
+                    .AsQueryable().OrderBy(it => it.IdEmployee)
+                    .ToDataSourceResult(take, skip, null, null));
         }
         [HttpPost]
         public JsonResult GetEmpSelect2(string q, int? page)
@@ -89,7 +99,7 @@ namespace EmployeeWebMVVMJavaScript.Controllers
             }
         }
 
-        public Action GridDataTables()
+        public ActionResult KendoListView()
         {
             return View();
         }

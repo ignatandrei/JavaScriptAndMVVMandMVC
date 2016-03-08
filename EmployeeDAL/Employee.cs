@@ -39,6 +39,10 @@ namespace JqueryMVCRazor_DAL
             this.Add(new employee(10, "Andrei Ignat", dl[0].IdDepartment));
             this.Add(new employee(15, "Andrei Rinea", dl[0].IdDepartment));
             this.Add(new employee(25, "Someone from HR", dl[1].IdDepartment));
+            for (int i = 1; i < 100; i += 10)
+            {
+                Add(new employee(i, "Andrei Ignat "+i, dl[0].IdDepartment));
+            }
         }
 
         public employee LoadId(int id)

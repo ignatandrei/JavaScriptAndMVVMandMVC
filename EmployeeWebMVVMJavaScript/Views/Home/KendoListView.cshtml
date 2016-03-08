@@ -1,0 +1,76 @@
+﻿
+@{
+    ViewBag.Title = "KendoListView";
+}
+
+<link rel="stylesheet" href="~/Content/kendo/kendo.common.min.css" />
+<link rel="stylesheet" href="~/Content/kendo/kendo.default.min.css" />
+<h2>Kendo</h2>
+<a href="https://github.com/telerik/kendo-ui-core">https://github.com/telerik/kendo-ui-core</a>
+
+
+<div id="example">
+
+    <div class="demo-section k-content wide">
+        http://demos.telerik.com/kendo-ui/listview/index
+        <div id="listView"></div>
+        <div id="pager" class="k-pager-wrap"></div>
+    </div>
+
+    <script type="text/x-kendo-template" id="template">
+        <div class="product">
+            <h3>#:NameEmployee#</h3>
+            
+        </div>
+    </script>
+
+    
+
+    
+</div>
+
+
+@section scripts
+{
+
+
+<script src="~/Scripts/Kendo/kendo.ui.core.min.js"></script>
+
+<script>
+    $(function () {
+        
+            var dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        //url: "//demos.telerik.com/kendo-ui/service/Products",
+                        url: '@Url.Action("GetEmpSelectKEndo")',
+                        //dataType: "jsonp
+                        type: "POST"
+                    }
+                    //,parameterMap: function (options) {
+                    //    return kendo.stringify(options);
+                    //}
+
+                },
+                
+                schema: {
+                    data: "Data",
+                    total: "Total"
+                },
+                pageSize: 5,
+                serverPaging: true
+                //serverFiltering: true,
+                //serverSorting: true
+            });
+
+            $("#pager").kendoPager({
+                dataSource: dataSource
+            });
+
+            $("#listView").kendoListView({
+                dataSource: dataSource,
+                template: kendo.template($("#template").html())
+            });
+        });
+</script>
+}
